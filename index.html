@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street Mentors - Learn From Your Neighbors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light-bg: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            padding: 0.7rem 1.5rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            color: #475569;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .map-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border-color);
+        }
+
+        .map-marker {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .map-marker:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .map-marker.active {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+
+        .mentors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mentor-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--primary);
+        }
+
+        .mentor-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            border-top-color: var(--success);
+        }
+
+        .mentor-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .mentor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 0.75rem;
+            border: 3px solid white;
+        }
+
+        .mentor-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .mentor-skill {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 600;
+        }
+
+        .mentor-body {
+            padding: 1.5rem;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #bfdbfe;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.8rem 0;
+            font-size: 0.95rem;
+            color: #475569;
+        }
+
+        .info-icon {
+            color: var(--primary);
+            font-weight: 600;
+            min-width: 30px;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .star {
+            color: var(--warning);
+        }
+
+        .tip-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .free-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: #475569;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .about-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .about-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .about-text {
+            line-height: 1.8;
+            color: #475569;
+            margin-bottom: 1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .feature-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.3rem;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .close-btn:hover {
+            color: #1e293b;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .map-container {
+                height: 400px;
+            }
+
+            .mentors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🗺️ Stranger Skills Map</h1>
+        <p>Discover hidden talents around you • Learn from unexpected experts</p>
+    </div>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="nav-btn active" data-section="map">🗺️ Live Map</button>
+            <button class="nav-btn" data-section="discover">✨ Discover</button>
+            <button class="nav-btn" data-section="trending">🔥 Trending</button>
+            <button class="nav-btn" data-section="about">ℹ️ About</button>
+            <button class="nav-btn" data-section="mentor">➕ Share Skill</button>
+        </div>
+
+        <!-- Map View Section -->
+        <div id="map" class="section active">
+            <div class="map-container" id="mapContainer">
+                <div style="text-align: center; color: #64748b;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📍</div>
+                    <p style="font-size: 1.1rem; font-weight: 600;">Hover over markers to see mentors</p>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-label">Filter by Skill Category</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="filter-music" checked>
+                        <label for="filter-music">🎵 Music</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="filter-sports" checked>
+                        <label for="filter-sports">⚽ Sports</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="filter-tech" checked>
+                        <label for="filter-tech">💻 Tech</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="filter-arts" checked>
+                        <label for="filter-arts">🎨 Arts</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="filter-repair" checked>
+                        <label for="filter-repair">🔧 Repair</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="filter-language" checked>
+                        <label for="filter-language">🗣️ Language</label>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Nearby Mentors</h2>
+                <div class="mentors-grid" id="mentorsList"></div>
+            </div>
+        </div>
+
+        <!-- Discover Section -->
+        <div id="discover" class="section">
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">✨ Discover Hidden Talents</h2>
+                <p style="color: #64748b; margin-bottom: 1.5rem; font-size: 1rem;">Explore skills you didn't know your neighbors had. From traditional crafts to unexpected hobbies.</p>
+                <div class="mentors-grid" id="discoverMentors"></div>
+            </div>
+        </div>
+
+        <!-- Trending Section -->
+        <div id="trending" class="section">
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">🔥 Trending Skills This Week</h2>
+                <p style="color: #64748b; margin-bottom: 1.5rem; font-size: 1rem;">Most popular skills people are learning right now in your area.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;" id="trendingSkills"></div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div id="about" class="section">
+            <div class="about-section">
+                <h2 class="about-title">About Stranger Skills Map</h2>
+                <p class="about-text">
+                    Ever wondered what your neighbors are really good at? Stranger Skills Map is a hyperlocal platform that reveals the hidden talents around you. From someone teaching chess in the park to a stranger fixing bikes on the corner, discover unexpected expertise within walking distance.
+                </p>
+                <p class="about-text">
+                    Learn directly from real people in real-time. No courses. No barriers. Just genuine human-to-human skill sharing with optional tips to support their time.
+                </p>
+                
+                <h3 style="font-size: 1.3rem; font-weight: 700; color: #1e293b; margin: 2rem 0 1rem;">Why Street Mentors?</h3>
+                <div class="feature-grid">
+                    <div class="feature-box">
+                        <div class="feature-icon">🎓</div>
+                        <div class="feature-title">Learn Freely</div>
+                        <div class="feature-desc">No expensive courses. Learn directly from experts in your community.</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">🤝</div>
+                        <div class="feature-title">Build Community</div>
+                        <div class="feature-desc">Connect with neighbors, share knowledge, strengthen local bonds.</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">💡</div>
+                        <div class="feature-title">Real Skills</div>
+                        <div class="feature-desc">Learn practical, hands-on knowledge that you can use immediately.</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">📍</div>
+                        <div class="feature-title">Local First</div>
+                        <div class="feature-desc">Find mentors near you. Learning happens where you are.</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">⏰</div>
+                        <div class="feature-title">Flexible Time</div>
+                        <div class="feature-desc">Pop-up sessions at times that work for mentors and learners.</div>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">⭐</div>
+                        <div class="feature-title">Transparent</div>
+                        <div class="feature-desc">Ratings and reviews help you find the best mentors.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Become Mentor Section -->
+        <div id="mentor" class="section">
+            <div class="about-section">
+                <h2 class="about-title">Share Your Skill</h2>
+                <p class="about-text">
+                    Your hidden talent is someone's wish. Whether it's a niche hobby, professional skill, or unexpected expertise – put yourself on the map. Help neighbors discover what you're great at and teach on your terms.
+                </p>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1rem; margin-bottom: 2rem;" onclick="openMentorForm()">
+                📝 Register as a Mentor
+            </button>
+
+            <div class="about-section">
+                <h3 style="font-size: 1.3rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">How It Works</h3>
+                <div style="line-height: 2.5;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">1</div>
+                        <div>
+                            <div style="font-weight: 700; color: #1e293b;">Register Your Skill</div>
+                            <div style="color: #64748b;">Tell us what you can teach and where you usually meet learners.</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">2</div>
+                        <div>
+                            <div style="font-weight: 700; color: #1e293b;">Set Your Terms</div>
+                            <div style="color: #64748b;">Decide if teaching is free or if you'd like small tips to support your time.</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">3</div>
+                        <div>
+                            <div style="font-weight: 700; color: #1e293b;">Start Teaching</div>
+                            <div style="color: #64748b;">Meet learners, share your knowledge, and grow your community impact.</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">4</div>
+                        <div>
+                            <div style="font-weight: 700; color: #1e293b;">Build Your Reputation</div>
+                            <div style="color: #64748b;">Collect ratings and testimonials. Become a trusted local expert.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="mentorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>📍 Put Your Skill on the Map</span>
+                <button class="close-btn" onclick="closeMentorForm()">✕</button>
+            </div>
+            <form onsubmit="handleMentorSubmit(event)">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" required placeholder="How do people know you?">
+                </div>
+                <div class="form-group">
+                    <label>Your Skill/Talent</label>
+                    <input type="text" required placeholder="e.g., Parkour, Sourdough Baking, Lock Picking, Skateboarding">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select required>
+                        <option value="">Select a category...</option>
+                        <option>🎵 Music</option>
+                        <option>⚽ Sports & Movement</option>
+                        <option>💻 Technology</option>
+                        <option>🎨 Arts & Crafts</option>
+                        <option>🔧 Repair & DIY</option>
+                        <option>🗣️ Language & Culture</option>
+                        <option>🌿 Nature & Outdoors</option>
+                        <option>✨ Other Unexpected Skill</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Where Do You Teach?</label>
+                    <select required>
+                        <option value="">Select...</option>
+                        <option>📍 Public Space (Park, Street, etc.)</option>
+                        <option>🏠 Private Space</option>
+                        <option>🔄 Flexible/Both</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Is it Free or Tips?</label>
+                    <select required>
+                        <option value="">Select...</option>
+                        <option>💰 Free - Build Community</option>
+                        <option>💵 Small Tips Appreciated</option>
+                        <option>💸 Flexible/Negotiable</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tell Us About Your Skill</label>
+                    <textarea required placeholder="What experience do you have? What will learners gain? What's unique about you?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>When Are You Usually Available?</label>
+                    <input type="text" required placeholder="e.g., Weekends at 10 AM, Tuesday evenings">
+                </div>
+                <button type="submit" class="submit-btn">🗺️ Add Me to the Map</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample mentor data with diverse & unexpected skills
+        const mentorsData = [
+            {
+                id: 1,
+                name: "Marcus",
+                skill: "Chess Strategy",
+                category: "sports",
+                emoji: "♟️",
+                location: { x: 20, y: 30 },
+                rating: 4.9,
+                reviews: 24,
+                price: "free",
+                distance: "0.3 km away",
+                experience: "10 years competitive play, teaches all ages",
+                availability: "Weekends in Central Park",
+                learners: 156,
+                trend: true
+            },
+            {
+                id: 2,
+                name: "Sarah",
+                skill: "Street Photography",
+                category: "arts",
+                emoji: "📸",
+                location: { x: 60, y: 40 },
+                rating: 4.8,
+                reviews: 18,
+                price: "tip",
+                distance: "0.5 km away",
+                experience: "Professional photographer, composition & light",
+                availability: "Saturdays & Sundays",
+                learners: 89,
+                trend: false
+            },
+            {
+                id: 3,
+                name: "James",
+                skill: "Vintage Bike Repair",
+                category: "repair",
+                emoji: "🔧",
+                location: { x: 40, y: 70 },
+                rating: 4.7,
+                reviews: 32,
+                price: "tip",
+                distance: "0.4 km away",
+                experience: "Mechanic, restores vintage bikes",
+                availability: "Weekday evenings, Saturday all day",
+                learners: 203,
+                trend: true
+            },
+            {
+                id: 4,
+                name: "Chen",
+                skill: "Web Dev Basics",
+                category: "tech",
+                emoji: "💻",
+                location: { x: 75, y: 25 },
+                rating: 4.9,
+                reviews: 28,
+                price: "free",
+                distance: "0.7 km away",
+                experience: "Full-stack developer, beginner-friendly",
+                availability: "Tuesday & Thursday evenings",
+                learners: 134,
+                trend: true
+            },
+            {
+                id: 5,
+                name: "Elena",
+                skill: "Spanish Conversation",
+                category: "language",
+                emoji: "🗣️",
+                location: { x: 35, y: 50 },
+                rating: 4.6,
+                reviews: 15,
+                price: "tip",
+                distance: "0.6 km away",
+                experience: "Native speaker, casual conversation sessions",
+                availability: "Flexible schedule",
+                learners: 67,
+                trend: false
+            },
+            {
+                id: 6,
+                name: "David",
+                skill: "Guitar Fingerpicking",
+                category: "music",
+                emoji: "🎸",
+                location: { x: 50, y: 60 },
+                rating: 4.8,
+                reviews: 22,
+                price: "free",
+                distance: "0.2 km away",
+                experience: "Classically trained, all levels",
+                availability: "Daily after 5 PM",
+                learners: 178,
+                trend: true
+            },
+            {
+                id: 7,
+                name: "Yuki",
+                skill: "Watercolor Painting",
+                category: "arts",
+                emoji: "🎨",
+                location: { x: 70, y: 55 },
+                rating: 4.7,
+                reviews: 19,
+                price: "tip",
+                distance: "0.8 km away",
+                experience: "Professional artist, outdoor plein air sessions",
+                availability: "Weekends in the park",
+                learners: 92,
+                trend: false
+            },
+            {
+                id: 8,
+                name: "Mike",
+                skill: "Tennis Basics",
+                category: "sports",
+                emoji: "🎾",
+                location: { x: 25, y: 75 },
+                rating: 4.9,
+                reviews: 26,
+                price: "free",
+                distance: "0.9 km away",
+                experience: "Former coach, beginner to intermediate",
+                availability: "Mornings at the courts",
+                learners: 145,
+                trend: true
+            },
+            {
+                id: 9,
+                name: "Rosa",
+                skill: "Sourdough Baking",
+                category: "arts",
+                emoji: "🍞",
+                location: { x: 45, y: 35 },
+                rating: 4.9,
+                reviews: 31,
+                price: "tip",
+                distance: "0.4 km away",
+                experience: "Home baker, starter maintenance & baking",
+                availability: "Sunday mornings",
+                learners: 218,
+                trend: true
+            },
+            {
+                id: 10,
+                name: "Anton",
+                skill: "Lockpicking Puzzles",
+                category: "tech",
+                emoji: "🔐",
+                location: { x: 55, y: 45 },
+                rating: 4.8,
+                reviews: 14,
+                price: "free",
+                distance: "0.5 km away",
+                experience: "Hobby locksmith, teaches mechanical puzzles",
+                availability: "Wednesday evenings",
+                learners: 53,
+                trend: false
+            },
+            {
+                id: 11,
+                name: "Jasmine",
+                skill: "Parkour Basics",
+                category: "sports",
+                emoji: "🏃",
+                location: { x: 30, y: 55 },
+                rating: 4.7,
+                reviews: 21,
+                price: "free",
+                distance: "0.3 km away",
+                experience: "Parkour enthusiast, safe fundamentals",
+                availability: "Saturdays & Sundays",
+                learners: 127,
+                trend: true
+            },
+            {
+                id: 12,
+                name: "Oliver",
+                skill: "Woodworking Basics",
+                category: "repair",
+                emoji: "🪵",
+                location: { x: 65, y: 70 },
+                rating: 4.6,
+                reviews: 18,
+                price: "tip",
+                distance: "0.7 km away",
+                experience: "Carpenter, teaches hand tools & joinery",
+                availability: "Weekday evenings, weekends",
+                learners: 75,
+                trend: false
+            },
+            {
+                id: 13,
+                name: "Nina",
+                skill: "Urban Foraging",
+                category: "arts",
+                emoji: "🌿",
+                location: { x: 15, y: 65 },
+                rating: 4.9,
+                reviews: 27,
+                price: "free",
+                distance: "0.8 km away",
+                experience: "Botanist, identifies edible plants safely",
+                availability: "Saturday mornings",
+                learners: 156,
+                trend: true
+            },
+            {
+                id: 14,
+                name: "Kai",
+                skill: "Skateboarding Tricks",
+                category: "sports",
+                emoji: "🛹",
+                location: { x: 80, y: 65 },
+                rating: 4.8,
+                reviews: 19,
+                price: "free",
+                distance: "0.9 km away",
+                experience: "Pro skater, teaches progression properly",
+                availability: "Afternoons & weekends",
+                learners: 189,
+                trend: true
+            },
+            {
+                id: 15,
+                name: "Sophie",
+                skill: "Origami Art",
+                category: "arts",
+                emoji: "📄",
+                location: { x: 40, y: 25 },
+                rating: 4.7,
+                reviews: 16,
+                price: "free",
+                distance: "0.6 km away",
+                experience: "Japanese origami master, complex designs",
+                availability: "Tuesday & Thursday evenings",
+                learners: 98,
+                trend: false
+            }
+        ];
+
+        // Initialize map
+        function initMap() {
+            const mapContainer = document.getElementById('mapContainer');
+            mapContainer.innerHTML = '';
+            
+            mentorsData.forEach(mentor => {
+                const marker = document.createElement('div');
+                marker.className = 'map-marker';
+                marker.innerHTML = mentor.emoji;
+                marker.style.left = mentor.location.x + '%';
+                marker.style.top = mentor.location.y + '%';
+                marker.style.transform = 'translate(-50%, -50%)';
+                
+                marker.addEventListener('click', () => openMentorDetail(mentor));
+                marker.addEventListener('mouseenter', () => {
+                    marker.style.zIndex = '10';
+                    showMentorPreview(mentor);
+                });
+                
+                mapContainer.appendChild(marker);
+            });
+        }
+
+        // Show mentor preview on hover
+        function showMentorPreview(mentor) {
+            // Could show a tooltip here
+        }
+
+        // Open mentor detail modal
+        function openMentorDetail(mentor) {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span>${mentor.emoji} ${mentor.skill}</span>
+                        <button class="close-btn" onclick="this.closest('.modal').remove()">✕</button>
+                    </div>
+                    <div style="padding: 1rem 0;">
+                        <div style="background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 0.75rem;">${mentor.emoji}</div>
+                            <div style="font-weight: 700; font-size: 1.2rem; color: #1e293b; margin-bottom: 0.3rem;">Taught by ${mentor.name}</div>
+                            <div class="rating" style="justify-content: center;">
+                                <span class="star">⭐ ${mentor.rating}</span>
+                                <span style="color: #64748b;">(${mentor.reviews} reviews)</span>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">👨‍🏫 About ${mentor.name}</div>
+                            <div style="color: #475569; line-height: 1.6;">${mentor.experience}</div>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">📍 Location</div>
+                            <div style="color: #475569;">${mentor.distance}</div>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">⏰ When?</div>
+                            <div style="color: #475569;">${mentor.availability}</div>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">👥 Community</div>
+                            <div style="color: #475569;">${mentor.learners} people already learning</div>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <span class="tip-badge ${mentor.price === 'free' ? 'free-badge' : ''}">${mentor.price === 'free' ? '💰 Free to Join - Tips Welcome' : '💵 Small Tips Suggested'}</span>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%; padding: 1rem; margin-bottom: 0.5rem;">📬 Message ${mentor.name}</button>
+                        <button class="btn btn-secondary" style="width: 100%; padding: 1rem;">✓ Interested</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // Render mentor card
+        function createMentorCard(mentor) {
+            return `
+                <div class="mentor-card" onclick="openMentorDetail(this.data)">
+                    <div class="mentor-header" data-mentor='${JSON.stringify(mentor).replace(/'/g, "&apos;")}'>
+                        <div class="mentor-avatar">${mentor.emoji}</div>
+                        <div class="mentor-name">${mentor.name}</div>
+                        <div class="mentor-skill">${mentor.skill}</div>
+                    </div>
+                    <div class="mentor-body">
+                        <div class="info-row">
+                            <span class="info-icon">⭐</span>
+                            <span>${mentor.rating} (${mentor.reviews} reviews)</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-icon">📍</span>
+                            <span>${mentor.distance}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-icon">⏰</span>
+                            <span>${mentor.availability}</span>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <span class="tip-badge ${mentor.price === 'free' ? 'free-badge' : ''}">${mentor.price === 'free' ? '💰 Free' : '💵 Tips'}</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="event.stopPropagation();">Book Session</button>
+                            <button class="btn btn-secondary" onclick="event.stopPropagation();">Message</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Add mentor data to card for click handling
+        function setupCardClickHandlers() {
+            document.querySelectorAll('.mentor-card').forEach((card, index) => {
+                card.data = mentorsData[index];
+                card.style.cursor = 'pointer';
+            });
+        }
+
+        // Load mentors
+        function loadMentors() {
+            const mentorsList = document.getElementById('mentorsList');
+            const discoverMentors = document.getElementById('discoverMentors');
+            
+            mentorsList.innerHTML = mentorsData.map(mentor => createMentorCard(mentor)).join('');
+            discoverMentors.innerHTML = mentorsData.map(mentor => createMentorCard(mentor)).join('');
+            
+            setupCardClickHandlers();
+            loadTrendingSkills();
+        }
+
+        // Load trending skills
+        function loadTrendingSkills() {
+            const trendingContainer = document.getElementById('trendingSkills');
+            const trendingMentors = mentorsData.filter(m => m.trend).sort((a, b) => b.learners - a.learners);
+            
+            trendingContainer.innerHTML = trendingMentors.map(mentor => `
+                <div class="mentor-card" style="cursor: pointer;" onclick="openMentorDetail(this.data)">
+                    <div class="mentor-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">🔥 TRENDING</div>
+                        <div class="mentor-avatar" style="margin-bottom: 1rem;">${mentor.emoji}</div>
+                        <div class="mentor-name">${mentor.skill}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.9;">by ${mentor.name}</div>
+                    </div>
+                    <div class="mentor-body">
+                        <div style="background: #fffbeb; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #f59e0b;">${mentor.learners}</div>
+                            <div style="font-size: 0.85rem; color: #92400e;">people learning</div>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-icon">⭐</span>
+                            <span>${mentor.rating} (${mentor.reviews} reviews)</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-icon">📍</span>
+                            <span>${mentor.distance}</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="event.stopPropagation();">Join Now</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add data to trending cards
+            document.querySelectorAll('#trendingSkills .mentor-card').forEach((card, index) => {
+                card.data = trendingMentors[index];
+            });
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const sectionId = this.getAttribute('data-section');
+                
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Modal functions
+        function openMentorForm() {
+            document.getElementById('mentorModal').classList.add('active');
+        }
+
+        function closeMentorForm() {
+            document.getElementById('mentorModal').classList.remove('active');
+        }
+
+        function handleMentorSubmit(e) {
+            e.preventDefault();
+            alert('Thank you! Your mentor profile will be reviewed and published soon.');
+            closeMentorForm();
+        }
+
+        // Close modal on outside click
+        document.getElementById('mentorModal').addEventListener('click', (e) => {
+            if (e.target.id === 'mentorModal') {
+                closeMentorForm();
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initMap();
+            loadMentors();
+        });
+    </script>
+</body>
+</html>
